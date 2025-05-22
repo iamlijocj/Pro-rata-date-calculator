@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!-- saved from url=(0151)file:///C:/Users/lijo.jose/OneDrive%20-%20Achilles%20Information%20Ltd/Lijo/Work/Pro%20Rata%20changes%20with%20Kratos/Pro-Rata%20Date%20Calculator.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label, select, input {
+            margin: 10px 0;
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pro-Rata date calculator for testing purposes</h1>
+    <h2>Current Term/Renewal Dates</h2><div>
+        
+        <label for="generalBaseDate">Select Base Date:</label>
+        <select id="generalBaseDate">
+            <option value="Term Start Date">Term Start Date</option>
+            <option value="Term End Date">Term End Date</option>
+            <option value="Current Term Invoice Date">Current Term Invoice Date</option>
+            <option value="Current Term Invoice Due Date">Current Term Invoice Due Date</option>
+            <option value="Current Term Invoice Due INO Date">Current Term Invoice Due INO Date</option>
+            <option value="Current Term Invoice Due SPD Date">Current Term Invoice Due SPD Date</option>
+            <option value="Current Term Invoice Due EXP Date">Current Term Invoice Due EXP Date</option>
+            <option value="Renewal Invoice RPD Date">Renewal Invoice RPD Date</option>
+            <option value="Renewal Invoice INV Date">Renewal Invoice INV Date</option>
+            <option value="Renewal Invoice INO Date">Renewal Invoice INO Date</option>
+            <option value="Renewal Invoice RPOS Date">Renewal Invoice RPOS Date</option>
+            <option value="Renewal Invoice EXP Date">Renewal Invoice EXP Date</option>
+        </select>
+        <label for="generalBaseDateInput">Enter Base Date:</label>
+        <input type="date" id="generalBaseDateInput">
+        <button onclick="calculateGeneralDates()">Calculate General Dates</button>
+        <div id="generalResults"><table><tbody><tr><th>Label</th><th>Date</th></tr><tr><td>Term Start Date</td><td>20/03/2024</td></tr><tr><td>Term End Date</td><td>20/03/2025</td></tr><tr><td>Current Term Invoice Date</td><td>20/03/2024</td></tr><tr><td>Current Term Invoice Due Date</td><td>19/05/2024</td></tr><tr><td>Current Term Invoice Due INO Date</td><td>20/05/2024</td></tr><tr><td>Current Term Invoice Due SPD Date</td><td>19/06/2024</td></tr><tr><td>Current Term Invoice Due EXP Date</td><td>19/07/2024</td></tr><tr><td>Renewal Invoice RPD Date</td><td>19/01/2025</td></tr><tr><td>Renewal Invoice INV Date</td><td>19/03/2025</td></tr><tr><td>Renewal Invoice INO Date</td><td>21/03/2025</td></tr><tr><td>Renewal Invoice RPOS Date</td><td>20/04/2025</td></tr><tr><td>Renewal Invoice EXP Date</td><td>20/05/2025</td></tr></tbody></table></div>
+    </div>
+    <div>
+        <h2>Upgrade/Downgrade Dates</h2>
+        <label for="upgradeBaseDate">Select Base Date:</label>
+        <select id="upgradeBaseDate">
+            <option value="Upgrade_Downgrade/Invoice Date">Upgrade_Downgrade/Invoice Date</option>
+            <option value="Upgrade Invoice Due Date INV">Upgrade Invoice Due Date INV</option>
+            <option value="Upgrade Invoice INO Date">Upgrade Invoice INO Date</option>
+            <option value="Upgrade Invoice SPD/RPOS Date">Upgrade Invoice SPD/RPOS Date</option>
+            <option value="Upgrade Invoice EXP Date">Upgrade Invoice EXP Date</option>
+        </select>
+        <label for="upgradeBaseDateInput">Enter Base Date:</label>
+        <input type="date" id="upgradeBaseDateInput">
+        <button onclick="calculateUpgradeDates()">Calculate Upgrade/Downgrade Dates</button>
+        <div id="upgradeResults"><table><tbody><tr><th>Label</th><th>Date</th></tr><tr><td>Upgrade_Downgrade/Invoice Date</td><td>20/05/2025</td></tr><tr><td>Upgrade Invoice Due Date INV</td><td>19/07/2025</td></tr><tr><td>Upgrade Invoice INO Date</td><td>20/07/2025</td></tr><tr><td>Upgrade Invoice SPD/RPOS Date</td><td>19/08/2025</td></tr><tr><td>Upgrade Invoice EXP Date</td><td>17/09/2025</td></tr></tbody></table></div>
+    </div>
+    <script>
+        const generalOffsets = {
+            "Term Start Date": 0,
+            "Term End Date": 365,
+            "Current Term Invoice Date": 0,
+            "Current Term Invoice Due Date": 60,
+            "Current Term Invoice Due INO Date": 61,
+            "Current Term Invoice Due SPD Date": 91,
+            "Current Term Invoice Due EXP Date": 121,
+            "Renewal Invoice RPD Date": 305,
+            "Renewal Invoice INV Date": 364,
+            "Renewal Invoice INO Date": 366,
+            "Renewal Invoice RPOS Date": 396,
+            "Renewal Invoice EXP Date": 426
+        };
+
+        const upgradeOffsets = {
+            "Upgrade_Downgrade/Invoice Date": 0,
+            "Upgrade Invoice Due Date INV": 60,
+            "Upgrade Invoice INO Date": 61,
+            "Upgrade Invoice SPD/RPOS Date": 91,
+            "Upgrade Invoice EXP Date": 120
+        };
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function calculateDates(baseDate, offsets) {
+            const results = [];
+            for (const [label, offset] of Object.entries(offsets)) {
+                const newDate = new Date(baseDate);
+                newDate.setDate(baseDate.getDate() + offset);
+                results.push({ label, date: formatDate(newDate) });
+            }
+            return results;
+        }
+
+        function displayResults(results, containerId) {
+            let resultHTML = "<table><tr><th>Label</th><th>Date</th></tr>";
+            for (const result of results) {
+                resultHTML += `<tr><td>${result.label}</td><td>${result.date}</td></tr>`;
+            }
+            resultHTML += "</table>";
+            document.getElementById(containerId).innerHTML = resultHTML;
+        }
+
+        function calculateGeneralDates() {
+            const baseDateLabel = document.getElementById("generalBaseDate").value;
+            const baseDateInput = document.getElementById("generalBaseDateInput").value;
+            if (!baseDateInput) {
+                alert("Please enter a valid base date.");
+                return;
+            }
+            const baseDate = new Date(baseDateInput);
+            const baseOffset = generalOffsets[baseDateLabel];
+            const adjustedOffsets = {};
+            for (const [label, offset] of Object.entries(generalOffsets)) {
+                adjustedOffsets[label] = offset - baseOffset;
+            }
+            const results = calculateDates(baseDate, adjustedOffsets);
+            displayResults(results, "generalResults");
+        }
+
+        function calculateUpgradeDates() {
+            const baseDateLabel = document.getElementById("upgradeBaseDate").value;
+            const baseDateInput = document.getElementById("upgradeBaseDateInput").value;
+            if (!baseDateInput) {
+                alert("Please enter a valid base date.");
+                return;
+            }
+            const baseDate = new Date(baseDateInput);
+            const baseOffset = upgradeOffsets[baseDateLabel];
+            const adjustedOffsets = {};
+            for (const [label, offset] of Object.entries(upgradeOffsets)) {
+                adjustedOffsets[label] = offset - baseOffset;
+            }
+            const results = calculateDates(baseDate, adjustedOffsets);
+            displayResults(results, "upgradeResults");
+        }
+    </script>
+
+
+</body></html>
